@@ -34,3 +34,4 @@ build/
 /mvnw
 /mvnw.cmd
 /.gitattributes
+/src/main/resources/application-dev.properties
