@@ -1,0 +1,208 @@
+openapi: 3.0.1
+info:
+  title: Microservice Implementation API
+  description: API для управления пользователями и подписками
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Локальный сервер разработки
+tags:
+  - name: Users
+    description: Операции с пользователями
+  - name: Subscriptions
+    description: Операции с подписками
+paths:
+  /users:
+    get:
+      tags: [Users]
+      summary: Получить всех пользователей
+      responses:
+        '200':
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      tags: [Users]
+      summary: Создать нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Пользователь создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users/{id}:
+    get:
+      tags: [Users]
+      summary: Получить пользователя по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Найденный пользователь
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Пользователь не найден
+    put:
+      tags: [Users]
+      summary: Обновить пользователя
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Обновленный пользователь
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      tags: [Users]
+      summary: Удалить пользователя
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Пользователь удален
+  /users/{id}/subscriptions:
+    post:
+      tags: [Subscriptions]
+      summary: Добавить подписку пользователю
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subscription'
+      responses:
+        '201':
+          description: Подписка добавлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+    get:
+      tags: [Subscriptions]
+      summary: Получить подписки пользователя
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список подписок пользователя
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subscription'
+  /users/{id}/subscriptions/{subId}:
+    delete:
+      tags: [Subscriptions]
+      summary: Удалить подписку пользователя
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: subId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Подписка удалена
+  /subscriptions/top:
+    get:
+      tags: [Subscriptions]
+      summary: Получить ТОП-3 популярных подписок
+      responses:
+        '200':
+          description: ТОП-3 популярных подписок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    serviceName:
+                      type: string
+                    count:
+                      type: integer
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          example: Иван Иванов
+        email:
+          type: string
+          format: email
+          example: user@example.com
+      required:
+        - name
+        - email
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        serviceName:
+          type: string
+          example: Netflix
+        subscriptionPlan:
+          type: string
+          example: Premium
+        userId:
+          type: integer
+          example: 1
+      required:
+        - serviceName
